@@ -1,0 +1,44 @@
+
+
+  - name: Install Java
+    apt: 
+      name: openjdk-17-jre
+      state: latest
+
+  - name: Install Tmux
+    apt: 
+      name: tmux
+      state: latest
+
+  - name: Create server directory
+    file:
+      path: /home/minecraft/{{server_name}}
+      state: directory
+      owner: minecraft
+      group: minecraft
+      mode: 0700
+
+  - name: Download
+    get_url:
+      url: https://papermc.io/api/v2/projects/paper/versions/1.18/builds/10/downloads/paper-1.18-10.jar
+      dest: /home/minecraft/{{server_name}}/server.jar
+      owner: minecraft
+      group: minecraft
+      mode: 0700
+
+  - name: Create starter script
+    template:
+      src: start.sh.j2
+      dest: /home/minecraft/{{server_name}}/start.sh
+      owner: minecraft
+      group: minecraft
+      mode: 0700
+
+  - name: Agree to EULA
+    template:
+      src: eula.txt
+      dest: /home/minecraft/{{server_name}}/eula.txt
+      owner: minecraft
+      group: minecraft
+      mode: 0664
+

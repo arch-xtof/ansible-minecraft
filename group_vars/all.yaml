@@ -1,0 +1,4 @@
+version: 1.18
+server_name: mc.kohuke.tech
+min_minecraft_ram: 1024
+max_minecraft_ram: 1024

@@ -1,0 +1,5 @@
+arch-xtof-0 ansible_host=18.223.192.216 ansible_port=22 ansible_ssh_user=ubuntu ansible_python_interpreter=python3
+
+[minecraft]
+arch-xtof-0
+
