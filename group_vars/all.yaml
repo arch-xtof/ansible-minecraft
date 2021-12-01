@@ -1,4 +1,24 @@
 version: 1.18
 server_name: mc.kohuke.tech
 min_minecraft_ram: 1024
-max_minecraft_ram: 1024
+max_minecraft_ram: 10240
+
+plugins:
+  - name: AuthMe-5.6.0-SNAPSHOT
+    url: https://media.forgecdn.net/files/3433/702/AuthMe-5.6.0-SNAPSHOT.jar
+#  - name: ProtocolLib
+#    url: https://media.forgecdn.net/files/2972/67/ProtocolLib.jar
+  - name: EssentialsX-2.19.0
+    url: https://media.forgecdn.net/files/3445/258/EssentialsX-2.19.0.jar
+  - name: EssentialsXSpawn-2.19.0
+    url: https://media.forgecdn.net/files/3445/274/EssentialsXSpawn-2.19.0.jar
+  - name: EssentialsXChat-2.19.0
+    url: https://media.forgecdn.net/files/3445/267/EssentialsXChat-2.19.0.jar
+#  - name: SilkSpawners
+#    url: https://media.forgecdn.net/files/3362/192/SilkSpawners.jar
+  - name: Clearlag
+    url: https://media.forgecdn.net/files/3198/633/Clearlag.jar
+#  - name: ExploitFixer
+#    url: 
+#  - name: Obsidian Breaker
+#    url: 
