@@ -20,7 +20,7 @@
 
   - name: Download
     get_url:
-      url: https://papermc.io/api/v2/projects/paper/versions/1.18/builds/10/downloads/paper-1.18-10.jar
+      url: https://papermc.io/api/v2/projects/paper/versions/1.18/builds/19/downloads/paper-1.18-19.jar
       dest: /home/minecraft/{{server_name}}/server.jar
       owner: minecraft
       group: minecraft
@@ -42,3 +42,35 @@
       group: minecraft
       mode: 0664
 
+  - name: Configure properties
+    template:
+      src: server.properties.j2
+      dest: /home/minecraft/{{server_name}}/server.properties
+      owner: minecraft
+      group: minecraft
+      mode: 0664
+
+  - name: Add icon
+    template:
+      src: server-icon.png
+      dest: /home/minecraft/{{server_name}}/server-icon.png
+      owner: minecraft
+      group: minecraft
+      mode: 0664
+
+  - name: Create plugins directory
+    file:
+      path: /home/minecraft/{{server_name}}/plugins
+      state: directory
+      owner: minecraft
+      group: minecraft
+      mode: 0775
+
+  - name: Download plugins
+    get_url:
+      url: "{{ item.url }}"
+      dest: /home/minecraft/{{server_name}}/plugins/{{item.name}}.jar
+      owner: minecraft
+      group: minecraft
+      mode: 0664
+    loop: "{{plugins}}"
