@@ -1,8 +1,15 @@
+# PaperMC.io
+# https://papermc.io/downloads
 version: 1.18
+build: 22
+
+# Server
 server_name: mc.kohuke.tech
 min_minecraft_ram: 1024
 max_minecraft_ram: 10240
 
+# Plugins
+install_plugins: false
 plugins:
   - name: AuthMe-5.6.0-SNAPSHOT
     url: https://media.forgecdn.net/files/3433/702/AuthMe-5.6.0-SNAPSHOT.jar

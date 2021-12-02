@@ -4,4 +4,3 @@
       name: minecraft
       shell: /bin/bash
       home: /home/minecraft
-      # TODO add password?
