@@ -1,4 +1,4 @@
-mc ansible_host=130.61.82.179 ansible_port=22 ansible_ssh_user=ubuntu ansible_python_interpreter=python3
+mc ansible_host= ansible_port=22 ansible_ssh_user=ubuntu ansible_python_interpreter=python3
 
 [minecraft]
 mc
