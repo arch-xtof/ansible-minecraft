@@ -49,6 +49,11 @@
       group: minecraft
       mode: 0664
 
+  - name: Retrieve properties
+    shell: "cat /home/minecraft/{{server_name}}/server.properties"
+    register: remote_properties
+    ignore_errors: true
+
   - name: Configure properties
     template:
       src: server.properties
@@ -56,6 +61,7 @@
       owner: minecraft
       group: minecraft
       mode: 0664
+    when: not (remote_properties.stdout.split('\n')|sort()|join()).endswith(lookup('file', '../templates/server.properties').split('\n')|sort()|join())
 
   - name: Add icon
     template:
