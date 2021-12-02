@@ -1,5 +1,4 @@
 
-
   - name: Install Java
     apt: 
       name: openjdk-17-jre
@@ -42,9 +41,17 @@
       group: minecraft
       mode: 0664
 
+  - name: Configure paper
+    template:
+      src: paper.yml
+      dest: /home/minecraft/{{server_name}}/paper.yml
+      owner: minecraft
+      group: minecraft
+      mode: 0664
+
   - name: Configure properties
     template:
-      src: server.properties.j2
+      src: server.properties
       dest: /home/minecraft/{{server_name}}/server.properties
       owner: minecraft
       group: minecraft
@@ -74,3 +81,15 @@
       group: minecraft
       mode: 0664
     loop: "{{plugins}}"
+#TODO create plugin directories
+#TODO configure plugins
+#TODO does not work with EssentialsX because of X
+#  - name: Configure plugins
+#    template:
+#      src: "conf_{{item.name.split('-')[0]}}.j2"
+#      dest: /home/minecraft/{{server_name}}/plugins/{{item.name.split('-')[0]}}/config.yml
+#      owner: minecraft
+#      group: minecraft
+#      mode: 0664
+#    loop: "{{plugins}}"
+#    when: "conf_{{item.name.split('-')[0]}}.j2 is file"
