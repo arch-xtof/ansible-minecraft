@@ -19,7 +19,7 @@
 
   - name: Download
     get_url:
-      url: https://papermc.io/api/v2/projects/paper/versions/1.18/builds/19/downloads/paper-1.18-19.jar
+      url: https://papermc.io/api/v2/projects/paper/versions/{{version}}/builds/{{build}}/downloads/paper-{{version}}-{{build}}.jar
       dest: /home/minecraft/{{server_name}}/server.jar
       owner: minecraft
       group: minecraft
@@ -41,7 +41,7 @@
       group: minecraft
       mode: 0664
 
-  - name: Configure paper
+  - name: Configure Paper
     template:
       src: paper.yml
       dest: /home/minecraft/{{server_name}}/paper.yml
@@ -81,6 +81,7 @@
       group: minecraft
       mode: 0664
     loop: "{{plugins}}"
+    when: "install_plugins"
 #TODO create plugin directories
 #TODO configure plugins
 #TODO does not work with EssentialsX because of X
