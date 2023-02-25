@@ -13,6 +13,8 @@
       - tmux
     state: latest
 
+- include_tasks: iptables.yaml # Oracle Cloud
+
 - file:
     path: "{{ item }}"
     state: directory
