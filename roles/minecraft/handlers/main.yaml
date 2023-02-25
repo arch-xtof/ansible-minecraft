@@ -1,0 +1,23 @@
+---
+- name: change server properties
+  template:
+    src: server.properties
+    dest: /home/minecraft/{{ server_name }}/server.properties
+    owner: minecraft
+    group: minecraft
+
+- name: change paper configs
+  template:
+    src: "{{ item }}"
+    dest: /home/minecraft/{{ server_name }}/config/{{ item }}
+    owner: minecraft
+    group: minecraft
+  loop:
+    - paper-global.yml
+    - paper-world-defaults.yml
+
+- name: restart minecraft
+  become: true
+  become_user: minecraft
+  become_method: sudo
+  shell: mc restart

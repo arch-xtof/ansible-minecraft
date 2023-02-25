@@ -1,21 +1,19 @@
-      
-  - name: Collect vm info
-    hosts: all
-    tasks:
-      - setup:
+---
+- name: Collect vm info
+  hosts: all
+  tasks:
+    - setup:
 
-  - name: Initialize
-    hosts: all
-    roles:
-      - init
-    become: yes
-    gather_facts: no
+- name: Initialize
+  hosts: all
+  roles:
+    - init
+  become: yes
+  gather_facts: no
 
-  - name: Minecraft
-    hosts: minecraft
-    roles:
-      - users
-      - minecraft
-    become: yes
-    gather_facts: no
-    
+- name: Minecraft
+  hosts: minecraft
+  roles:
+    - minecraft
+  become: yes
+  gather_facts: no

@@ -1,0 +1,96 @@
+#!/bin/bash
+
+if [[ "$(whoami)" != "minecraft" ]]; then
+    echo "you are not a minecraft user!"
+    exit 1
+fi
+
+print_usage() {
+    prog=$(basename  "$0")
+    cat <<EOF
+Minecraft Admin Tool.
+
+Usage: $prog {start|stop|restart|attach|status}
+
+EOF
+}
+
+check_status() {
+    pgrep -x -f 'tmux new-session -d -s minecraft cd /home/minecraft/{{server_name}} && java -Xms{{mc_gb_min}}G -Xmx{{mc_gb_max}}G -jar server.jar nogui' >> /dev/null
+    echo $?
+}
+
+status() {
+    if [[ $(check_status) == 0 ]]; then
+        echo "server is running"
+    else
+        echo "server is not running"
+    fi
+}
+
+start() {
+    if [[ $(check_status) == 0 ]]; then
+        echo "server is already running"
+    else
+        tmux new-session -d -s minecraft 'cd /home/minecraft/{{server_name}} && java -Xms{{mc_gb_min}}G -Xmx{{mc_gb_max}}G -jar server.jar nogui'
+        sleep 3
+        echo "server started"
+    fi
+}
+
+stop() {
+    # TODO add timer
+    if [[ $(check_status) == 0 ]]; then
+        tmux send-keys -t minecraft ENTER 'save-all' ENTER 'stop' ENTER
+        sleep 3
+        echo "server stopped"
+    else
+        echo "server is not running"
+    fi
+}
+
+restart() {
+    if [[ $(check_status) == 0 ]]; then
+        stop
+        while true
+        do
+            if [[ $(check_status) == 1 ]]; then
+                break
+            fi
+        done
+        start
+    else
+        start
+    fi
+}
+
+attach() {
+    if [[ $(check_status) == 0 ]]; then
+        tmux attach-session -t minecraft
+    else
+        echo "server is not running"
+    fi
+}
+
+action="$1"
+
+case "$action" in
+status)
+    status
+    ;;
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    restart
+    ;;
+attach)
+    attach
+    ;;
+*)
+    print_usage
+    ;;
+esac

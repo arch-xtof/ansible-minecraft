@@ -1,6 +1,0 @@
-
-  - name: Create user minecraft
-    user:
-      name: minecraft
-      shell: /bin/bash
-      home: /home/minecraft

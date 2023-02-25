@@ -1,102 +1,85 @@
+---
+- name: create minecraft user
+  user:
+    name: minecraft
+    shell: /bin/bash
+    home: /home/minecraft
 
-  - name: Install Java
-    apt: 
-      name: openjdk-17-jre
-      state: latest
+- apt:
+    name:
+      - acl # for ansible to become minecraft user
+      - nano # personal purposes
+      - openjdk-19-jre-headless
+      - tmux
+    state: latest
 
-  - name: Install Tmux
-    apt: 
-      name: tmux
-      state: latest
+- file:
+    path: "{{ item }}"
+    state: directory
+    owner: minecraft
+    group: minecraft
+  loop:
+     - /home/minecraft/{{server_name}}
+     - /home/minecraft/{{server_name}}/ansible
+     - /home/minecraft/{{server_name}}/config
+     - /home/minecraft/{{server_name}}/plugins
 
-  - name: Create server directory
-    file:
-      path: /home/minecraft/{{server_name}}
-      state: directory
-      owner: minecraft
-      group: minecraft
-      mode: 0700
+- name: download papermc
+  get_url:
+    url: https://papermc.io/api/v2/projects/paper/versions/{{version}}/builds/{{build}}/downloads/paper-{{version}}-{{build}}.jar
+    dest: /home/minecraft/{{server_name}}/server.jar
+    owner: minecraft
+    group: minecraft
+    mode: 0700
 
-  - name: Download
-    get_url:
-      url: https://papermc.io/api/v2/projects/paper/versions/{{version}}/builds/{{build}}/downloads/paper-{{version}}-{{build}}.jar
-      dest: /home/minecraft/{{server_name}}/server.jar
-      owner: minecraft
-      group: minecraft
-      mode: 0700
+- template:
+    src: "{{ item }}"
+    dest: /home/minecraft/{{server_name}}/{{ item }}
+    owner: minecraft
+    group: minecraft
+  loop:
+    - eula.txt
+    - server-icon.png
 
-  - name: Create starter script
-    template:
-      src: start.sh.j2
-      dest: /home/minecraft/{{server_name}}/start.sh
-      owner: minecraft
-      group: minecraft
-      mode: 0700
+- name: server.properties
+  template:
+    src: server.properties
+    dest: /home/minecraft/{{server_name}}/ansible/server.properties
+    owner: minecraft
+    group: minecraft
+  notify:
+    - change paper configs
+    - restart minecraft
 
-  - name: Agree to EULA
-    template:
-      src: eula.txt
-      dest: /home/minecraft/{{server_name}}/eula.txt
-      owner: minecraft
-      group: minecraft
-      mode: 0664
+- template:
+    src: "{{ item }}"
+    dest: /home/minecraft/{{server_name}}/ansible/{{ item }}
+    owner: minecraft
+    group: minecraft
+  loop:
+    - paper-global.yml
+    - paper-world-defaults.yml
+  notify:
+    - change paper configs
+    - restart minecraft
 
-  - name: Configure Paper
-    template:
-      src: paper.yml
-      dest: /home/minecraft/{{server_name}}/paper.yml
-      owner: minecraft
-      group: minecraft
-      mode: 0664
+- template:
+    src: mc.sh.j2
+    dest: /usr/local/bin/mc
+    mode: 0755
 
-  - name: Retrieve properties
-    shell: "cat /home/minecraft/{{server_name}}/server.properties"
-    register: remote_properties
-    ignore_errors: true
+- meta: flush_handlers
 
-  - name: Configure properties
-    template:
-      src: server.properties
-      dest: /home/minecraft/{{server_name}}/server.properties
-      owner: minecraft
-      group: minecraft
-      mode: 0664
-    when: not (remote_properties.stdout.split('\n')|sort()|join()).endswith(lookup('file', '../templates/server.properties').split('\n')|sort()|join())
+- name: check minecraft status
+  command: pgrep -x -f 'tmux new-session -d -s minecraft cd /home/minecraft/{{server_name}} && java -Xms{{mc_gb_min}}G -Xmx{{mc_gb_max}}G -jar server.jar nogui'
+  register: minecraft_pid
+  changed_when: false
+  check_mode: false
+  failed_when: false
 
-  - name: Add icon
-    template:
-      src: server-icon.png
-      dest: /home/minecraft/{{server_name}}/server-icon.png
-      owner: minecraft
-      group: minecraft
-      mode: 0664
-
-  - name: Create plugins directory
-    file:
-      path: /home/minecraft/{{server_name}}/plugins
-      state: directory
-      owner: minecraft
-      group: minecraft
-      mode: 0775
-
-  - name: Download plugins
-    get_url:
-      url: "{{ item.url }}"
-      dest: /home/minecraft/{{server_name}}/plugins/{{item.name}}.jar
-      owner: minecraft
-      group: minecraft
-      mode: 0664
-    loop: "{{plugins}}"
-    when: "install_plugins"
-#TODO create plugin directories
-#TODO configure plugins
-#TODO does not work with EssentialsX because of X
-#  - name: Configure plugins
-#    template:
-#      src: "conf_{{item.name.split('-')[0]}}.j2"
-#      dest: /home/minecraft/{{server_name}}/plugins/{{item.name.split('-')[0]}}/config.yml
-#      owner: minecraft
-#      group: minecraft
-#      mode: 0664
-#    loop: "{{plugins}}"
-#    when: "conf_{{item.name.split('-')[0]}}.j2 is file"
+- name: start minecraft
+  become: true
+  become_user: minecraft
+  become_method: sudo
+  shell: mc start
+  when: minecraft_pid.stdout == ""
