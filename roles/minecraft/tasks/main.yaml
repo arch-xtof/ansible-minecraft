@@ -34,14 +34,20 @@
     group: minecraft
     mode: 0700
 
-- template:
-    src: "{{ item }}"
-    dest: /home/minecraft/{{server_name}}/{{ item }}
+- name: eula.txt
+  template:
+    src: eula.txt
+    dest: /home/minecraft/{{server_name}}/eula.txt
     owner: minecraft
     group: minecraft
-  loop:
-    - eula.txt
-    - server-icon.png
+
+- name: server-icon.png
+  copy:
+    src: server-icon.png
+    dest: /home/minecraft/{{server_name}}/server-icon.png
+    owner: minecraft
+    group: minecraft
+    mode: 0775
 
 - name: server.properties
   template:
