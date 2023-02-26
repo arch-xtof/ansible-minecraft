@@ -71,6 +71,8 @@
     - change paper configs
     - restart minecraft
 
+- include_tasks: plugins.yaml # OpeNLogin
+
 - template:
     src: mc.sh.j2
     dest: /usr/local/bin/mc

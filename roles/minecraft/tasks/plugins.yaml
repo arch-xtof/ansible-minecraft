@@ -1,0 +1,8 @@
+---
+- name: OpeNLogin
+  get_url:
+    url: https://github.com/nickuc/OpeNLogin/releases/download/v1.6.3/OpenLogin.jar
+    dest: /home/minecraft/{{server_name}}/plugins/OpenLogin.jar
+    owner: minecraft
+    group: minecraft
+  notify: restart minecraft

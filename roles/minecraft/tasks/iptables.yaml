@@ -1,3 +1,4 @@
+---
 - iptables:
     chain: INPUT
     protocol: tcp
